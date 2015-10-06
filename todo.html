@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+  <div class="col-md-12">
+      <div class="col-md-4"></div>
+
+      <div class="col-md-4">
+        <div id="container"></div>
+      </div>
+
+      <div class="col-md-4"></div>
+  </div>
+
+    <script type="text/jsx">
+        console.clear();
+        // var app = app || {};
+        // app.ALL_TODOS = 'all';
+        // app.ACTIVE_TODOS = 'active';
+        // app.COMPLETED_TODOS = 'completed';
+        // var CrossoutCheckbox = React.createClass({
+        //   getInitialState: function () {
+        //     return {
+        //         complete: (!!this.props.complete) || false
+        //       };
+        //   },
+        //   handleChange: function(){
+        //     this.setState({
+        //       complete: !this.state.complete
+        //     });
+        //   },
+        //   render: function(){
+        //     var labelStyle={
+        //       'text-decoration': this.state.complete?'line-through':''
+        //     };
+        //     return (
+        //       <span>
+        //         <label style={labelStyle}>
+        //           <input
+        //             type="checkbox"
+        //             defaultChecked={this.state.complete}
+        //             ref="complete"
+        //             onChange={this.handleChange}
+        //           >
+        //           {this.props.text}
+        //           </input>
+        //         </label>
+        //       </span>
+        //     );
+        //   }
+        // });
+    var TaskList = React.createClass({
+        // deleteElement:function(){
+        //     console.log("remove");
+        // },
+
+
+        render: function(){
+
+            // var displayTask  = function(task, taskIndex){
+            //     console.log("NEW ADDED TASK"+task);
+
+            //     return <li>
+            //         {task}
+            //         <button onClick= {this.deleteElement}> Delete </button>
+            //     </li>;
+            // };
+
+            return <ul>
+
+                {this.props.items.map((task, taskIndex) =>
+
+                    <div className="form-group text-center">
+                    <input
+                            className="toggle glyphicon glyphicon-pushpin"
+                            aria-hidden="true"
+                            type="checkbox"
+                            // checked={this.props.completed}
+                            // onChange={this.props.onToggle}
+                        >
+                        {" "}
+                        {task}{" "}
+                            <button className="glyphicon glyphicon-trash btn btn-danger"  aria-hidden="true" onClick={this.props.deleteTask} value={taskIndex} ></button>
+                        </input>
+                    </div>
+
+                )}
+            </ul>;
+        }
+     });
+
+    var TaskApp = React.createClass({
+        getInitialState: function(){
+            return {
+                 items: ['Laundry', 'Dishes', 'Vacuum'],
+                 task: ''
+            }
+        },
+
+        deleteTask: function(e) {
+            var taskIndex = parseInt(e.target.value, 10);
+            console.log('remove task: %d', taskIndex, this.state.items[taskIndex]);
+            this.setState(state => {
+                state.items.splice(taskIndex, 1);
+                return {items: state.items};
+            });
+        },
+
+        onChange: function(e) {
+            this.setState({ task: e.target.value });
+        },
+
+        overflowAlert: function() {
+            if ((50 - this.state.task.length) < 0) {
+                var beforeOverflowText = this.state.task.substring(50 - 10, 50);
+                var overflowText = this.state.task.substring(50);
+
+                  return (
+                    <div className="alert alert-warning">
+                      <strong>Oops! Too Long:</strong>
+                      &nbsp;...{beforeOverflowText}
+                      <strong className="bg-danger">{overflowText}</strong>
+                    </div>
+                  );
+            }
+        },
+        addTask:function (e){
+            this.setState({
+                items: this.state.items.concat([this.state.task]),
+
+                task: ''
+            })
+
+            e.preventDefault();
+        },
+
+        render: function(){
+            return(
+                <div className="well clearfix">
+                    <h1>To Do List: </h1>
+                    <TaskList items={this.state.items} deleteTask={this.deleteTask} />
+
+                    <form onSubmit={this.addTask}>
+                        {this.overflowAlert()}
+                        <input className="form-control form-group width" onChange={this.onChange} type="text" value={this.state.task}/>
+                        <span>{50 - this.state.task.length}</span>
+                        <button className="btn btn-primary pull-right form-group"
+                                disabled={this.state.task.length === 0 || (50 - this.state.task.length) < 0}> Add Task </button>
+                    </form>
+                </div>
+            );
+        }
+    });
+
+    React.render(<TaskApp />, document.getElementById('container'));
+
+
+    </script>
+</body>
+</html>
